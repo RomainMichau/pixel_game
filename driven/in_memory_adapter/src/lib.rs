@@ -1,5 +1,6 @@
 use std::collections::HashMap;
-use std::time::Instant;
+
+use chrono::{DateTime, Utc};
 
 use pixel_board_core::board::{DataSourcePort, PixelColor, PixelGameError, Player};
 
@@ -29,17 +30,18 @@ impl DataSourcePort for InMemoryAdapter {
         self.grid = vec![init_color; width * height];
     }
 
-    fn create_new_player(&mut self, player_name: String) -> usize {
+    fn create_new_player(&mut self, player_name: String) -> &Player {
         let id = self.players.len() + 1;
-        self.players.insert(id, Player {
+        let player = Player {
             id,
             name: player_name,
             last_played: None,
-        });
-        return id;
+        };
+        self.players.insert(id, player);
+        return self.players.get(&id).unwrap()
     }
 
-    fn update_last_play(&mut self, player_id: usize, timestamp: Instant) -> Result<(), PixelGameError> {
+    fn update_last_play(&mut self, player_id: usize, timestamp: DateTime<Utc>) -> Result<(), PixelGameError> {
         let player = self.players.get_mut(&player_id).ok_or(PixelGameError::PlayerNotFound)?;
         player.last_played = Some(timestamp);
         return Ok(());

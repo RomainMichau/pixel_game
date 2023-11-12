@@ -7,3 +7,4 @@ edition = "2021"
 
 [dependencies]
 pixel_board_core = { path = "../../pixel_board_core" }
+chrono = { version = "0.4", features = ["serde"] }

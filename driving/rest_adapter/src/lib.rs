@@ -1,35 +1,15 @@
+mod openapi;
+mod controller;
+
 use std::sync::Mutex;
 
-use actix_web::{App, get, HttpResponse, HttpServer, post, Responder, web};
+use actix_web::{App, HttpServer};
 pub use actix_web::main;
 use actix_web::web::Data;
-use serde::Deserialize;
+use utoipa::{OpenApi};
+use utoipa_swagger_ui::SwaggerUi;
 
-use pixel_board_core::board::{PixelColor, PixelGame};
-
-#[derive(Deserialize)]
-pub(crate) struct SetPixelRequest {
-    x: usize,
-    y: usize,
-    color: PixelColor,
-}
-
-#[get("/")]
-async fn hello() -> impl Responder {
-    HttpResponse::Ok().body("Hello world!")
-}
-
-#[get("/board")]
-async fn get_board(data: Data<Mutex<Box<dyn PixelGame + Send>>>) -> actix_web::error::Result<impl Responder> {
-    Ok(web::Json(data.lock().unwrap().get_board().clone()))
-}
-
-
-#[post("/pixel")]
-async fn echos(req: web::Query<SetPixelRequest>, data: Data<Mutex<Box<dyn PixelGame + Send>>>) -> impl Responder {
-    data.lock().unwrap().set_pixel(req.x, req.y, 0, req.color.clone().into()).expect("TODO: panic message");
-    HttpResponse::Ok()
-}
+use pixel_board_core::board::PixelGame;
 
 
 pub async fn start(game: Box<dyn PixelGame + Send + 'static>) -> std::io::Result<()> {
@@ -39,11 +19,17 @@ pub async fn start(game: Box<dyn PixelGame + Send + 'static>) -> std::io::Result
     HttpServer::new(move || {
         App::new()
             .app_data(data.clone())
-            .service(hello)
-            .service(echos)
-            .service(get_board)
+            .service(controller::hello)
+            .service(controller::set_pixel)
+            .service(controller::get_board)
+            .service(controller::create_player)
+            .service(
+                SwaggerUi::new("/swagger-ui/{_:.*}")
+                    .url("/api-docs/openapi.json", openapi::ApiDoc::openapi()),
+            )
     })
         .bind(("127.0.0.1", 8080))?
         .run()
         .await
 }
+

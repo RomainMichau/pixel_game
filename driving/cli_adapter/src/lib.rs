@@ -1,14 +1,14 @@
 use colored::Colorize;
 
 use pixel_board_core::board;
-use pixel_board_core::board::PixelGame;
+use pixel_board_core::board::{PixelGame, Player};
 
 pub fn start_game(mut game: Box<dyn PixelGame>) {
     // let in_memory_adapter = in_memory_adapter::init(100, 100, board::PixelColor::White);
     // let mut game = pixel_board_core::init(100, 100, board::PixelColor::White,
     //                                       std::time::Duration::from_secs(100), in_memory_adapter);
     print_board(&game);
-    let player_id = game.create_new_player("romain".to_string());
+    let player = game.create_new_player("romain".to_string());
 
     while {
         let mut input = String::new();
@@ -29,14 +29,15 @@ pub fn start_game(mut game: Box<dyn PixelGame>) {
                 "blue" => board::PixelColor::Blue,
                 _ => board::PixelColor::Green
             };
-            match edit_pixel(&mut game, x, y, color, player_id) {
+            let pixel_id = get_pixel_id(&game, x, y);
+            match edit_pixel(&mut game, pixel_id, color, player.id) {
                 Ok(_) => {
                     print_board(&game);
                 }
                 Err(e) => match e {
                     board::PixelGameError::PlayerNotFound => println!("Player not found"),
                     board::PixelGameError::InvalidCoordinates => println!("Invalid coordinates"),
-                    board::PixelGameError::PlayerAlreadyPlayed(remaining) => println!("Player already played, remaining time: {:?}", remaining),
+                    board::PixelGameError::PlayerNeedToWaitSeconds(remaining) => println!("Player already played, remaining time: {:?}", remaining),
                 }
             }
             true
@@ -44,8 +45,8 @@ pub fn start_game(mut game: Box<dyn PixelGame>) {
     } {}
 }
 
-fn edit_pixel(board: &mut Box<dyn PixelGame>, x: usize, y: usize, color: board::PixelColor, player_id: usize) -> Result<(), board::PixelGameError> {
-    board.set_pixel(x, y, player_id, color)
+fn edit_pixel(board: &mut Box<dyn PixelGame>, pixel_id: usize, color: board::PixelColor, player_id: usize) -> Result<(), board::PixelGameError> {
+    board.set_pixel(pixel_id, player_id, color)
 }
 
 fn print_board(board: &Box<dyn PixelGame>) {
@@ -64,6 +65,10 @@ fn print_board(board: &Box<dyn PixelGame>) {
         println!();
     }
     println!();
+}
+
+fn get_pixel_id(board: &Box<dyn PixelGame>, x: usize, y: usize) -> usize {
+    y * board.get_width() + x
 }
 
 

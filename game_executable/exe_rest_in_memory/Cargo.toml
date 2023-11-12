@@ -1,0 +1,12 @@
+[package]
+name = "exe_rest_in_memory"
+version = "0.1.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+in_memory_adapter = { path = "../../driven/in_memory_adapter"}
+pixel_board_core = { path = "../../pixel_board_core" }
+rest_adapter = {path = "../../driving/rest_adapter"}
+actix-web = "4"

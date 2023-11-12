@@ -1,9 +1,13 @@
 [package]
-name = "pixel_board_core"
+name = "rest_adapter"
 version = "0.1.0"
 edition = "2021"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
+actix-web = "4"
+pixel_board_core = { path = "../../pixel_board_core" }
 serde = { version = "1.0.192", features = ["derive"] }
+env_logger = { version = "0.10.0", features = [] }
+oasgen = "0.14.0"

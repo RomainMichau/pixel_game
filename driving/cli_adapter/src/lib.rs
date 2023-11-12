@@ -52,7 +52,7 @@ fn print_board(board: &Box<dyn PixelGame>) {
     let char = "▣";
     for y in 0..board.get_height() {
         for x in 0..board.get_width() {
-            match board.get()[y * board.get_width() + x] {
+            match board.get_board()[y * board.get_width() + x] {
                 board::PixelColor::Green => print!("{}", char.green()),
                 board::PixelColor::Red => print!("{}", char.red()),
                 board::PixelColor::White => print!("{}", char.white()),

@@ -1,4 +1,5 @@
 use std::time::{Duration, Instant};
+use serde::{Deserialize, Serialize};
 
 pub trait DataSourcePort {
     fn get_grid(&self) -> &Vec<PixelColor>;
@@ -18,6 +19,8 @@ pub enum PixelGameError {
 
 #[derive(Clone)]
 #[derive(Debug)]
+#[derive(Deserialize)]
+#[derive(Serialize)]
 pub enum PixelColor {
     Green,
     Red,
@@ -33,23 +36,24 @@ pub struct Player {
     pub last_played: Option<Instant>,
 }
 
+
 pub trait PixelGame {
     fn set_pixel(&mut self, x: usize, y: usize, player_id: usize, color: PixelColor) -> Result<(), PixelGameError>;
-    fn get(&self) -> &Vec<PixelColor>;
+    fn get_board(&self) -> &Vec<PixelColor>;
     fn get_width(&self) -> usize;
     fn get_height(&self) -> usize;
     fn create_new_player(&mut self, player_name: String) -> usize;
 }
 
 pub(crate) struct PixelGameImpl {
-    data_source: Box<dyn DataSourcePort>,
+    data_source: Box<dyn DataSourcePort + Send>,
     width: usize,
     height: usize,
     turn_duration: Duration,
 }
 
 impl PixelGameImpl {
-    pub(crate) fn new(width: usize, height: usize, init_color: PixelColor, turn_duration: Duration, mut data_source: Box<dyn DataSourcePort>) -> Self {
+    pub(crate) fn new(width: usize, height: usize, init_color: PixelColor, turn_duration: Duration, mut data_source: Box<dyn DataSourcePort + Send>) -> Self {
         data_source.init_grid(width, height, init_color);
         PixelGameImpl {
             width,
@@ -85,7 +89,7 @@ impl PixelGame for PixelGameImpl {
     }
 
 
-    fn get(&self) -> &Vec<PixelColor> {
+    fn get_board(&self) -> &Vec<PixelColor> {
         &self.data_source.get_grid()
     }
 

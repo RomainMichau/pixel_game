@@ -3,10 +3,10 @@ use colored::Colorize;
 use pixel_board_core::board;
 use pixel_board_core::board::PixelGame;
 
-fn main() {
-    let in_memory_adapter = in_memory_adapter::init(100, 100, board::PixelColor::White);
-    let mut game = pixel_board_core::init(100, 100, board::PixelColor::White,
-                                          std::time::Duration::from_secs(100), in_memory_adapter);
+pub fn start_game(mut game: Box<dyn PixelGame>) {
+    // let in_memory_adapter = in_memory_adapter::init(100, 100, board::PixelColor::White);
+    // let mut game = pixel_board_core::init(100, 100, board::PixelColor::White,
+    //                                       std::time::Duration::from_secs(100), in_memory_adapter);
     print_board(&game);
     let player_id = game.create_new_player("romain".to_string());
 

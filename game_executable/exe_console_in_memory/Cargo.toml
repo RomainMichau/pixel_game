@@ -1,10 +1,11 @@
 [package]
-name = "cli_adapter"
+name = "exe_console_in_memory"
 version = "0.1.0"
 edition = "2021"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
+in_memory_adapter = { path = "../../driven/in_memory_adapter"}
 pixel_board_core = { path = "../../pixel_board_core" }
-colored = "2.0.4"
+cli_adapter = {path = "../../driving/cli_adapter"}

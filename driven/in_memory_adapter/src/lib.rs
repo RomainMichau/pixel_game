@@ -3,9 +3,9 @@ use std::time::Instant;
 
 use pixel_board_core::board::{DataSourcePort, PixelColor, PixelGameError, Player};
 
-pub fn init(width: usize, height: usize, init_color: PixelColor) -> Box<dyn DataSourcePort> {
+pub fn new() -> Box<dyn DataSourcePort> {
     return Box::new(InMemoryAdapter {
-        grid: vec![init_color; width * height],
+        grid: Vec::new(),
         players: HashMap::new(),
     });
 }
